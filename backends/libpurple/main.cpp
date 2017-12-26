@@ -1253,7 +1253,7 @@ static void conv_write_im(PurpleConversation *conv, const char *who, const char 
 			std::string name;
 			guchar * data = (guchar *) purple_imgstore_get_data_wrapped(image);
 			size_t len = purple_imgstore_get_size_wrapped(image);
-			if (len < 1000000 && data) {
+			if (len < 15000000 && data) {
 				ext = purple_imgstore_get_extension(image);
 				char *hash = calculate_data_hash(data, len, "sha1");
 				if (!hash) {
@@ -1274,7 +1274,7 @@ static void conv_write_im(PurpleConversation *conv, const char *who, const char 
 				output.close();
 			}
 			else {
-				LOG4CXX_WARN(logger, "Image bigger than 1MB.");
+				LOG4CXX_WARN(logger, "Image bigger than 15MB.");
 				purple_imgstore_unref_wrapped(image);
 				return;
 			}
