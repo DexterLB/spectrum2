@@ -1757,7 +1757,7 @@ void * requestInput(const char *title, const char *primary,const char *secondary
 			np->m_inputRequests[req->mainJID] = req;
 			return NULL;
 		}
-		else if (primaryString == "Steam two-factor authentication") {
+		else if (primaryString == "Set your Steam Guard Code") {
 			LOG4CXX_INFO(logger, "prpl-steam-mobile steam guard request");
 			np->handleMessage(np->m_accounts[account], np->adminLegacyName, std::string("Steam Guard code: "));
 			inputRequest *req = new inputRequest;
@@ -2018,9 +2018,15 @@ static void RoomlistProgress(PurpleRoomlist *list, gboolean in_progress)
 
 		GList *rooms;
 		std::list<std::string> m_topics;
+		PurplePlugin *plugin = purple_find_prpl_wrapped(purple_account_get_protocol_id_wrapped(list->account));
+		PurplePluginProtocolInfo *prpl_info = PURPLE_PLUGIN_PROTOCOL_INFO(plugin);
 		for (rooms = list->rooms; rooms != NULL; rooms = rooms->next) {
 			PurpleRoomlistRoom *room = (PurpleRoomlistRoom *)rooms->data;
-			np->m_rooms[np->m_accounts[list->account]].push_back(room->name);
+			if (room->type == PURPLE_ROOMLIST_ROOMTYPE_CATEGORY) continue;
+			std::string roomId = prpl_info && prpl_info->roomlist_room_serialize ?
+				prpl_info->roomlist_room_serialize(room)
+				: room->name;
+			np->m_rooms[np->m_accounts[list->account]].push_back(roomId);
 
 			if (topicId == -1) {
 				m_topics.push_back(room->name);
